@@ -20,10 +20,10 @@ export default function LandingPage() {
           Shop local — get your<br className="sm:hidden" /> <span className="text-brand-orange">everyday essentials</span>
         </h1>
 
-        <p className="absolute bottom-24 left-1/2 z-10 w-[92%] max-w-lg -translate-x-1/2 text-sm leading-6 text-white drop-shadow sm:bottom-28 sm:text-lg sm:leading-8">
+        <p className="absolute bottom-[17rem] left-1/2 z-10 w-[92%] max-w-lg -translate-x-1/2 text-sm leading-6 text-white drop-shadow sm:bottom-28 sm:text-lg sm:leading-8">
           Groceries and everyday essentials from local supermarkets, delivered to your door.
         </p>
-        <a href="#partners" className="absolute bottom-8 left-1/2 z-10 inline-flex min-h-10 -translate-x-1/2 items-center justify-center rounded-md bg-brand-orange px-8 py-2.5 text-xs font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-orange-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:bottom-10 sm:min-h-12 sm:px-10 sm:text-sm">
+        <a href="#partners" className="absolute bottom-[11rem] left-1/2 z-10 inline-flex min-h-10 -translate-x-1/2 items-center justify-center rounded-md bg-brand-orange px-8 py-2.5 text-xs font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-orange-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:bottom-10 sm:min-h-12 sm:px-10 sm:text-sm">
           Discover Now
         </a>
       </section>
