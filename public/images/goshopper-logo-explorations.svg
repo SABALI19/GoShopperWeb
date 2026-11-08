@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="920" viewBox="0 0 1200 920" fill="none">
+  <rect width="1200" height="920" fill="#F5F1ED"/>
+  <text x="72" y="82" fill="#181411" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" letter-spacing="-1">GO-SHOPPER / LOGO DIRECTIONS</text>
+  <text x="74" y="115" fill="#716B66" font-family="Arial, Helvetica, sans-serif" font-size="15" letter-spacing="2">BAG + G MONOGRAM EXPLORATION</text>
+
+  <!-- 01: A direct, friendly bag with a clear negative-space G. -->
+  <g transform="translate(64 150)">
+    <rect width="520" height="340" rx="22" fill="#FFFFFF"/>
+    <g transform="translate(204 36)">
+      <path d="M38 55V43C38 24 53 9 72 9S106 24 106 43V55" stroke="#181411" stroke-width="12" stroke-linecap="round"/>
+      <path d="M20 53H124L137 168C139 185 127 198 111 198H33C17 198 5 185 7 168L20 53Z" fill="#EC5B13"/>
+      <path d="M89 91C83 84 75 80 65 80C47 80 35 94 35 112C35 131 47 145 65 145C77 145 87 139 93 130H68V112H116V123C112 146 91 164 65 164C36 164 16 143 16 112C16 82 37 61 65 61C81 61 95 68 105 80L89 91Z" fill="#FFFFFF" transform="translate(8 20) scale(.84)"/>
+    </g>
+    <text x="260" y="286" text-anchor="middle" fill="#181411" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" letter-spacing="-0.5">Go-Shopper</text>
+    <text x="260" y="316" text-anchor="middle" fill="#8A827B" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="2.5">01 / THE EVERYDAY G</text>
+  </g>
+
+  <!-- 02: Bold silhouette, with an orange G carved through the bag. -->
+  <g transform="translate(616 150)">
+    <rect width="520" height="340" rx="22" fill="#181411"/>
+    <g transform="translate(204 36)">
+      <path d="M41 56V42C41 24 55 10 73 10S105 24 105 42V56" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round"/>
+      <path d="M19 54H127L138 166C140 185 128 199 110 199H34C16 199 4 185 6 166L19 54Z" fill="#FFFFFF"/>
+      <path d="M94 91C87 82 77 78 66 78C47 78 35 92 35 111C35 130 48 144 66 144C79 144 89 138 95 128H68V111H116V122C112 146 92 163 66 163C37 163 16 143 16 111C16 80 37 60 66 60C83 60 98 67 108 80L94 91Z" fill="#EC5B13" transform="translate(8 20) scale(.84)"/>
+    </g>
+    <text x="260" y="286" text-anchor="middle" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" letter-spacing="-0.5">Go-Shopper</text>
+    <text x="260" y="316" text-anchor="middle" fill="#C8BFB8" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="2.5">02 / THE BOLD CUTOUT</text>
+  </g>
+
+  <!-- 03: Light outline construction for a softer, more compact brand mark. -->
+  <g transform="translate(64 520)">
+    <rect width="520" height="340" rx="22" fill="#FFFFFF"/>
+    <g transform="translate(204 36)">
+      <path d="M42 56V43C42 25 56 11 74 11S106 25 106 43V56" stroke="#EC5B13" stroke-width="10" stroke-linecap="round"/>
+      <path d="M20 56H128L138 164C140 184 127 198 108 198H40C21 198 8 184 10 164L20 56Z" stroke="#181411" stroke-width="10" stroke-linejoin="round"/>
+      <path d="M91 91C85 83 76 79 66 79C48 79 36 93 36 111C36 130 48 143 66 143C78 143 88 138 94 128H68V111H115V122C111 145 91 161 66 161C38 161 18 142 18 111C18 81 38 61 66 61C82 61 96 68 106 80L91 91Z" fill="#EC5B13" transform="translate(8 20) scale(.84)"/>
+    </g>
+    <text x="260" y="286" text-anchor="middle" fill="#181411" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" letter-spacing="-0.5">Go-Shopper</text>
+    <text x="260" y="316" text-anchor="middle" fill="#8A827B" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="2.5">03 / THE OPEN G</text>
+  </g>
+
+  <!-- 04: Compact app-style badge with the G as the visual anchor. -->
+  <g transform="translate(616 520)">
+    <rect width="520" height="340" rx="22" fill="#EC5B13"/>
+    <g transform="translate(204 36)">
+      <path d="M42 54V43C42 26 56 12 73 12S104 26 104 43V54" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+      <path d="M21 52H125L136 163C138 183 126 197 108 197H38C20 197 8 183 10 163L21 52Z" fill="#181411"/>
+      <path d="M87 91C80 84 72 80 62 80C45 80 33 94 33 111C33 129 45 142 62 142C74 142 84 137 90 128H66V111H111V122C107 144 87 160 62 160C35 160 16 141 16 111C16 82 35 63 62 63C78 63 92 69 101 81L87 91Z" fill="#FFFFFF" transform="translate(10 20) scale(.84)"/>
+      <circle cx="116" cy="174" r="13" fill="#EC5B13"/>
+      <path d="M110 174H121M116 169V179" stroke="#181411" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <text x="260" y="286" text-anchor="middle" fill="#181411" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" letter-spacing="-0.5">Go-Shopper</text>
+    <text x="260" y="316" text-anchor="middle" fill="#3C2114" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="2.5">04 / THE SHOPPER BADGE</text>
+  </g>
+</svg>
