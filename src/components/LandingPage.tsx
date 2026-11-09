@@ -17,7 +17,7 @@ export default function LandingPage() {
         <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,20,17,.16)_0%,rgba(24,20,17,.12)_42%,rgba(24,20,17,.64)_100%)]" />
 
         <h1 className="absolute left-1/2 top-[48%] z-10 w-[92%] max-w-4xl -translate-x-1/2 -translate-y-1/2 text-4xl font-bold uppercase leading-[1.08] tracking-[-.045em] text-white drop-shadow-lg sm:text-6xl md:text-7xl">
-          Shop local — get your<br className="sm:hidden" /> <span className="text-brand-orange">everyday essentials</span>
+          Shop local, get your<br className="sm:hidden" /> <span className="text-brand-orange">everyday essentials</span>
         </h1>
 
         <p className="absolute bottom-[17rem] left-1/2 z-10 w-[92%] max-w-lg -translate-x-1/2 text-sm leading-6 text-white drop-shadow sm:bottom-28 sm:text-lg sm:leading-8">

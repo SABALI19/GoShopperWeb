@@ -189,8 +189,14 @@ footer small { color: #77716d; font-size: 10px; }
 .form-grid label, .resubmit label { display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: #ddd7d3; }
 .form-grid .wide { grid-column: 1 / -1; }
 .form-grid input, .form-grid textarea, .resubmit textarea { width: 100%; background: #2a2826; border: 1px solid #5d5955; border-radius: 8px; color: white; padding: 13px 14px; outline: none; font-size: 13px; }
+.form-grid select { width: 100%; background: #2a2826; border: 1px solid #5d5955; border-radius: 8px; color: white; padding: 13px 14px; outline: none; font-size: 13px; }
 .form-grid textarea, .resubmit textarea { min-height: 98px; resize: vertical; }
-.form-grid input:focus, .form-grid textarea:focus, .resubmit textarea:focus { border-color: var(--orange); }
+.form-grid input:focus, .form-grid textarea:focus, .form-grid select:focus, .resubmit textarea:focus { border-color: var(--orange); }
+.ownership-check { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; color: #ddd7d3; font-size: 12px; line-height: 1.6; }
+.ownership-check input { accent-color: var(--orange); margin-top: 3px; }
+.application-success h1 { margin: 12px 0; font-size: 34px; }
+.application-success p { color: #ddd7d3; font-size: 13px; line-height: 1.7; }
+.application-success .actions { flex-wrap: wrap; margin-top: 24px; }
 .privacy-note { font-size: 11px; color: var(--muted); margin: 24px 0; }
 .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .review-grid small { color: var(--muted); font-size: 10px; }

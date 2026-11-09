@@ -84,7 +84,7 @@ export default function Header({ overlay = false }: { overlay?: boolean }) {
         </div>
 
         {menuOpen && (
-          <div className="absolute left-2 right-2 top-full mt-1 grid gap-1 rounded-xl border border-stone-200 bg-white p-3 text-sm shadow-xl sm:left-4 sm:right-4 sm:max-w-xs">
+          <div className="absolute left-2 right-2 top-full mt-1 grid gap-1 rounded-xl border border-stone-200 bg-white p-3 text-sm text-brand-ink shadow-xl sm:left-4 sm:right-4 sm:max-w-xs">
             <a onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" href="/#how">How it works</a>
             <a onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" href="/#partners">For supermarkets</a>
             <a onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" href="/#riders">For riders</a>
