@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Show } from "@clerk/react";
+import { useAuth } from "../auth/AuthProvider";
 
 const appDownloadUrl = import.meta.env.VITE_APP_DOWNLOAD_URL as string | undefined;
 
 export default function Header({ overlay = false }: { overlay?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [shopPromptOpen, setShopPromptOpen] = useState(false);
+  const { user, signOut } = useAuth();
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
@@ -62,12 +63,7 @@ export default function Header({ overlay = false }: { overlay?: boolean }) {
           <div className="ml-auto flex items-center gap-2">
 
             <span aria-hidden="true" className="absolute right-14 top-1/2 h-12 w-px -translate-y-1/2 bg-white/60 sm:left-[72px] sm:h-10" />
-            <Show when="signed-in">
-              <Link className="hidden rounded-lg px-3 py-2 text-xs font-semibold text-white hover:bg-white/15 sm:inline-flex" to="/application/status">My applications</Link>
-            </Show>
-            <Show when="signed-out">
-              <Link className="hidden rounded-lg px-3 py-2 text-xs font-semibold text-white hover:bg-white/15 sm:inline-flex" to="/sign-in">Sign in</Link>
-            </Show>
+            {user ? <Link className="hidden rounded-lg px-3 py-2 text-xs font-semibold text-white hover:bg-white/15 sm:inline-flex" to="/application/status">My applications</Link> : <><Link className="hidden rounded-lg px-3 py-2 text-xs font-semibold text-white hover:bg-white/15 sm:inline-flex" to="/sign-in">Sign in</Link><Link className="hidden rounded-lg px-3 py-2 text-xs font-semibold text-white hover:bg-white/15 sm:inline-flex" to="/sign-up">Sign up</Link></>}
             <button
               type="button"
               aria-label="Shopping bag. Open app information."
@@ -88,10 +84,10 @@ export default function Header({ overlay = false }: { overlay?: boolean }) {
             <a onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" href="/#how">How it works</a>
             <a onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" href="/#partners">For supermarkets</a>
             <a onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" href="/#riders">For riders</a>
+            <Link onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" to="/register/supermarket">Apply as a supermarket</Link>
+            <Link onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" to="/register/rider">Apply as a delivery partner</Link>
             <Link onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" to="/application/status">Application status</Link>
-            <Show when="signed-out">
-              <Link onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" to="/sign-in">Sign in / Register</Link>
-            </Show>
+            {user ? <button onClick={() => { setMenuOpen(false); void signOut(); }} className="rounded-lg px-3 py-2 text-left hover:bg-stone-100" type="button">Sign out</button> : <><Link onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" to="/sign-in">Sign in</Link><Link onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 hover:bg-stone-100" to="/sign-up">Create a customer account</Link></>}
           </div>
         )}
       </div>

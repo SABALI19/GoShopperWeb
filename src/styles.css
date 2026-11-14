@@ -178,6 +178,7 @@ footer small { color: #77716d; font-size: 10px; }
 .auth-aside h1 { font-size: 52px; max-width: 550px; line-height: 1.1; }
 .auth-aside p { color: var(--muted); }
 .auth-box { width: min(100%, 430px); max-width: 100%; min-width: 0; justify-self: center; margin-inline: auto; background: #211d1a; padding: 24px; border-radius: var(--radius); }
+.auth-box form, .auth-box input { width: 100%; min-width: 0; max-width: 100%; }
 .auth-box .cl-rootBox, .auth-box .cl-cardBox { width: 100%; max-width: 100%; margin-inline: auto; }
 .form-page, .status-page { max-width: 920px; margin: auto; padding: 48px 24px 80px; min-height: 75vh; }
 .back-link { font-size: 12px; color: var(--muted); }
@@ -185,6 +186,14 @@ footer small { color: #77716d; font-size: 10px; }
 .form-intro h1, .status-page > h1 { font-size: 42px; letter-spacing: -1.8px; margin: 11px 0; }
 .form-intro p, .status-page > p { color: var(--muted); font-size: 13px; line-height: 1.7; }
 .application-form, .status-card, .empty { background: #211d1a; padding: 28px; border-radius: var(--radius); border: 1px solid var(--line); }
+.auth-signup-card { max-width: 920px; }
+.auth-signup-fields { row-gap: 18px; }
+.auth-signup-fields input, .auth-field input { margin-top: 4px; }
+.auth-field { display: flex; flex-direction: column; gap: 8px; color: #ddd7d3; font-size: 12px; }
+.auth-form { display: grid; gap: 18px; }
+.auth-form > .button { width: fit-content; min-width: 210px; }
+.auth-form > p:last-child { margin: 0; color: var(--muted); font-size: 12px; }
+.auth-form > p:last-child a { color: var(--orange); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .form-grid label, .resubmit label { display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: #ddd7d3; }
 .form-grid .wide { grid-column: 1 / -1; }
@@ -197,6 +206,14 @@ footer small { color: #77716d; font-size: 10px; }
 .application-success h1 { margin: 12px 0; font-size: 34px; }
 .application-success p { color: #ddd7d3; font-size: 13px; line-height: 1.7; }
 .application-success .actions { flex-wrap: wrap; margin-top: 24px; }
+.customer-welcome { max-width: 920px; }
+.customer-welcome__card { text-align: center; }
+.customer-welcome__card h1 { max-width: 700px; margin: 12px auto; font-size: clamp(30px, 4vw, 42px); line-height: 1.2; }
+.customer-welcome__card > p { max-width: 680px; margin: 12px auto; }
+.customer-welcome__download { display: grid; justify-items: center; gap: 8px; margin-top: 25px; }
+.customer-welcome__qr { padding: 14px; background: white; border-radius: 10px; }
+.customer-welcome__download .privacy-note { max-width: 420px; }
+.customer-welcome__card .alert { margin: 24px auto 0; max-width: 520px; }
 .privacy-note { font-size: 11px; color: var(--muted); margin: 24px 0; }
 .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .review-grid small { color: var(--muted); font-size: 10px; }
@@ -260,11 +277,12 @@ footer small { color: #77716d; font-size: 10px; }
   footer > div { gap: 14px; flex-direction: column; }
   .auth { display: flex; flex-direction: column; align-items: stretch; padding: 22px 22px 42px; gap: 30px; }
   .auth-aside h1 { font-size: 39px; }
-  .auth-box { width: min(100%, 480px); padding: 15px; }
+  .auth-box { width: min(100%, 480px); padding: 16px; }
   .form-page, .status-page { padding: 34px 18px 60px; }
   .form-intro { margin: 30px 0 22px; }
   .form-intro h1, .status-page > h1 { font-size: 34px; }
   .application-form, .status-card, .empty { padding: 19px; }
+  .auth-form > .button { width: 100%; }
   .form-grid, .review-grid { grid-template-columns: 1fr; }
   .form-grid .wide { grid-column: auto; }
   .review-card .actions { flex-direction: column; align-items: stretch; }

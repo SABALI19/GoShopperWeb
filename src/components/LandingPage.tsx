@@ -10,22 +10,24 @@ export default function LandingPage() {
   return (
     <main className="overflow-hidden bg-brand-ink text-white">
       <section
-        className="relative min-h-screen min-h-[100svh] overflow-hidden bg-brand-ink bg-cover bg-center px-5 text-center sm:px-10"
+        className="relative min-h-screen min-h-[100svh] overflow-hidden bg-brand-ink bg-cover bg-center text-center"
         style={{ backgroundImage: "url('/images/rider-hero.jpeg')" }}
         aria-label="Go-Shopper delivery service"
       >
         <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,20,17,.16)_0%,rgba(24,20,17,.12)_42%,rgba(24,20,17,.64)_100%)]" />
 
-        <h1 className="absolute left-1/2 top-[48%] z-10 w-[92%] max-w-4xl -translate-x-1/2 -translate-y-1/2 text-4xl font-bold uppercase leading-[1.08] tracking-[-.045em] text-white drop-shadow-lg sm:text-6xl md:text-7xl">
-          Shop local, get your<br className="sm:hidden" /> <span className="text-brand-orange">everyday essentials</span>
-        </h1>
+        <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-7xl flex-col items-center justify-center gap-5 px-4 pb-8 pt-28 sm:gap-8 sm:px-10 sm:pb-12 sm:pt-36">
+          <h1 className="w-full max-w-5xl text-[clamp(2rem,8.5vw,5rem)] font-bold uppercase leading-[1.08] tracking-[-.045em] text-white drop-shadow-lg">
+            Shop local, get your<br className="sm:hidden" /> <span className="text-brand-orange">everyday essentials</span>
+          </h1>
 
-        <p className="absolute bottom-[17rem] left-1/2 z-10 w-[92%] max-w-lg -translate-x-1/2 text-sm leading-6 text-white drop-shadow sm:bottom-28 sm:text-lg sm:leading-8">
-          Groceries and everyday essentials from local supermarkets, delivered to your door.
-        </p>
-        <a href="#partners" className="absolute bottom-[11rem] left-1/2 z-10 inline-flex min-h-10 -translate-x-1/2 items-center justify-center rounded-md bg-brand-orange px-8 py-2.5 text-xs font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-orange-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:bottom-10 sm:min-h-12 sm:px-10 sm:text-sm">
-          Discover Now
-        </a>
+          <p className="w-full max-w-lg text-sm leading-6 text-white drop-shadow sm:text-lg sm:leading-8">
+            Groceries and everyday essentials from local supermarkets, delivered to your door.
+          </p>
+          <a href="#partners" className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-md bg-brand-orange px-8 py-2.5 text-xs font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-orange-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:min-h-12 sm:px-10 sm:text-sm">
+            Discover Now
+          </a>
+        </div>
       </section>
 
       <section id="how" className="scroll-mt-6 px-5 py-16 sm:px-10 sm:py-24 lg:px-16">
