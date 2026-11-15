@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useAuth } from "../auth/AuthProvider";
+import AdminSettingsPage from "./SettingsPage";
+import { AdminProfile } from "./AdminProfile";
+import { Brand } from "../components/SiteFooter";
 
 const API = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
 type Row = Record<string, any>;
@@ -45,21 +48,52 @@ function useAdminQuery<T>(key: string, path: string) {
 }
 
 export default function AdminDashboard() {
-  const location = useLocation(); const navigate = useNavigate(); const { user, signOut } = useAuth();
+  const location = useLocation(); const navigate = useNavigate();
   const active = menu.find(([, href]) => href === location.pathname) || menu.find(([, href]) => location.pathname.startsWith(`${href}/`)) || menu[0];
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarOverlays, setSidebarOverlays] = useState(isSidebarOverlayWidth);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const media = window.matchMedia("(max-width: 1050px)");
+    const update = () => { setSidebarOverlays(media.matches); if (!media.matches) setMobileOpen(false); };
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!mobileOpen || !sidebarOverlays) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    sidebarRef.current?.querySelector<HTMLElement>("a, button")?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setMobileOpen(false); };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", closeOnEscape);
+      menuToggleRef.current?.focus();
+    };
+  }, [mobileOpen, sidebarOverlays]);
+
   return <div className="admin-shell">
-    <aside className={`admin-sidebar ${mobileOpen ? "is-open" : ""}`}>
-      <Link to="/admin" className="admin-brand"><span className="admin-brand-icon">G</span><span>Go-Shopper<small>ADMIN CONSOLE</small></span></Link>
+    {sidebarOverlays && mobileOpen ? <button type="button" className="admin-sidebar-backdrop" aria-label="Close navigation menu" onClick={() => setMobileOpen(false)} /> : null}
+    <aside id="admin-sidebar" ref={sidebarRef} className={`admin-sidebar ${mobileOpen ? "is-open" : ""}`} aria-hidden={sidebarOverlays && !mobileOpen} inert={sidebarOverlays && !mobileOpen}>
+      <Brand to="/admin" className="admin-brand" />
       <div className="admin-nav-label">PLATFORM</div>
       <nav>{menu.map(([label, href, icon]) => <Link key={href} onClick={() => setMobileOpen(false)} className={`admin-nav-link ${active[1] === href ? "active" : ""}`} to={href}><span className="admin-nav-icon">{icon}</span>{label}</Link>)}</nav>
-      <div className="admin-sidebar-footer"><span className="admin-avatar">{user?.firstName?.[0] || "A"}</span><span>{user?.firstName} {user?.lastName}<small>Administrator</small></span><button aria-label="Sign out" onClick={() => { void signOut().then(() => navigate("/sign-in")); }}>↪</button></div>
+      <div className="admin-sidebar-footer"><AdminProfile placement="sidebar"/></div>
     </aside>
     <main className="admin-main">
-      <header className="admin-topbar"><button className="admin-menu-toggle" onClick={() => setMobileOpen(v => !v)} aria-label="Toggle navigation">☰</button><div><span className="admin-top-kicker">Go-Shopper / Admin</span><strong>{active[0]}</strong></div><div className="admin-top-user"><span className="admin-avatar">{user?.firstName?.[0] || "A"}</span><span>{user?.firstName} {user?.lastName}<small>Administrator</small></span></div></header>
+      <header className="admin-topbar"><button ref={menuToggleRef} className="admin-menu-toggle" onClick={() => setMobileOpen(value => !value)} aria-expanded={mobileOpen} aria-controls="admin-sidebar" aria-label={mobileOpen ? "Close navigation" : "Open navigation"}>☰</button><div><span className="admin-top-kicker">Go-Shopper / Admin</span><strong>{active[0]}</strong></div><AdminProfile placement="header"/></header>
       <div className="admin-content"><Page page={active[1]} navigate={navigate}/></div>
     </main>
   </div>;
+}
+
+function isSidebarOverlayWidth() {
+  return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 1050px)").matches;
 }
 
 function Page({ page, navigate }: { page: string; navigate: ReturnType<typeof useNavigate> }) {
@@ -128,8 +162,7 @@ function Customers({navigate}:{navigate:ReturnType<typeof useNavigate>}){const [
 
 function CustomerDetail({id}:{id:string}){const c=useAdminQuery<{user:Row}>(`customer-${id}`,`/api/users/admin/${id}`);const orders=useAdminQuery<Result<{orders:Row[]}>>(`customer-orders-${id}`,`/api/users/admin/${id}/orders?page=1&limit=25`);const {getToken}=useAuth();const client=useQueryClient();const [reason,setReason]=useState("");const [message,setMessage]=useState("");const u=c.data?.user;const status=useMutation({mutationFn:async()=>{const t=await getToken();if(!t)throw new Error("Sign in again.");return request(`/api/users/admin/${id}/status`,t,{method:"PATCH",body:JSON.stringify({isSuspended:!u?.isSuspended,reason:u?.isSuspended?"":reason})});},onSuccess:()=>{setMessage("Customer account status updated.");void client.invalidateQueries({queryKey:["admin",`customer-${id}`]});void c.refetch();},onError:e=>setMessage(e instanceof Error?e.message:"Could not update customer.")});const cols=useMemo<ColumnDef<Row,any>[]>(()=>[{header:"Order",accessorKey:"orderNumber"},{header:"Stores",accessorFn:r=>r.subOrders?.length||0},{header:"Amount",accessorFn:r=>money(r.totalKobo)},{header:"Payment",cell:x=><StatusBadge value={x.row.original.paymentStatus}/>},{header:"Status",cell:x=><StatusBadge value={x.row.original.status}/>},{header:"Date",accessorFn:r=>date(r.createdAt)}],[]);return <><Link className="admin-back" to="/admin/customers">← Customers</Link><Heading title={u?`${u.firstName} ${u.lastName}`:"Customer detail"} subtitle={u?.email||"Account profile and order history."}/><State loading={c.isLoading} error={c.error} retry={()=>void c.refetch()}/>{u&&<><section className="admin-panel"><div className="admin-kv-grid"><Info label="Email" value={u.email}/><Info label="Phone" value={u.phone}/><Info label="Account status" value={u.isSuspended?"Suspended":"Active"}/><Info label="Joined" value={date(u.createdAt)}/></div><div className="admin-actions">{!u.isSuspended&&<input className="admin-search" value={reason} onChange={e=>setReason(e.target.value)} placeholder="Reason required to suspend"/>}<button className={`admin-button ${u.isSuspended?"":"admin-button--danger"}`} disabled={status.isPending||(!u.isSuspended&&!reason.trim())} onClick={()=>status.mutate()}>{u.isSuspended?"Reactivate customer":"Suspend customer"}</button></div>{message&&<div className="admin-inline-message">{message}</div>}</section><section className="admin-panel admin-spaced"><div className="admin-panel-heading"><h2>Order history</h2><span>{orders.data?.total||0} orders</span></div><State loading={orders.isLoading} error={orders.error} retry={()=>void orders.refetch()}/>{orders.data&&<DataTable rows={orders.data.orders||[]} columns={cols}/>}</section></>}</>}
 
-function Settings(){const q=useAdminQuery<{settings:Row}>("settings","/api/admin/settings");const {getToken}=useAuth();const client=useQueryClient();const [values,setValues]=useState<Row|null>(null),[msg,setMsg]=useState("");useEffect(()=>{if(q.data?.settings)setValues(q.data.settings);},[q.data]);const mutation=useMutation({mutationFn:async()=>{const t=await getToken();if(!t)throw new Error("Sign in again.");return request("/api/admin/settings",t,{method:"PUT",body:JSON.stringify(values)});},onSuccess:()=>{setMsg("Settings saved.");void client.invalidateQueries({queryKey:["admin","settings"]});},onError:e=>setMsg(e instanceof Error?e.message:"Could not save settings.")});return <><Heading title="Platform settings" subtitle="Manage checkout thresholds and platform fees. Amounts are entered in naira and stored in kobo."/><State loading={q.isLoading} error={q.error} retry={()=>void q.refetch()}/>{values&&<section className="admin-panel admin-settings-panel"><div className="admin-settings-fields"><MoneyField label="Multi-store checkout minimum" value={values.multiStoreCheckoutMinimumKobo} onChange={v=>setValues({...values,multiStoreCheckoutMinimumKobo:v})}/><MoneyField label="Estimated delivery fee" value={values.deliveryFeeKobo} onChange={v=>setValues({...values,deliveryFeeKobo:v})}/><MoneyField label="Service fee" value={values.serviceFeeKobo} onChange={v=>setValues({...values,serviceFeeKobo:v})}/></div><p className="admin-footnote">Current source: {values.source||"database"}. Commission settings are not supported by the current backend.</p>{msg&&<div className="admin-inline-message">{msg}</div>}<button className="admin-button" disabled={mutation.isPending} onClick={()=>mutation.mutate()}>{mutation.isPending?"Saving…":"Save settings"}</button></section>}</>}
-function MoneyField({label,value,onChange}:{label:string;value:number;onChange:(v:number)=>void}){return <label className="admin-field">{label}<span className="admin-money-input"><b>₦</b><input type="number" min="0" step="0.01" value={(Number(value||0)/100).toFixed(2)} onChange={e=>onChange(Math.round(Number(e.target.value||0)*100))}/></span></label>}
+function Settings(){return <AdminSettingsPage/>}
 
 function Deliveries(){const [status,setStatus]=useState("all"),[qtext,setQtext]=useState("");const path=`/api/admin/deliveries?page=1&limit=50${status!=="all"?`&status=${status}`:""}${qtext?`&q=${encodeURIComponent(qtext)}`:""}`;const deliveries=useAdminQuery<Result<{deliveries:Row[]}>>(`deliveries-${status}-${qtext}`,path);const riders=useAdminQuery<{riders:Row[]}>("riders","/api/admin/deliveries/riders/list?status=all");const {getToken}=useAuth();const client=useQueryClient();const [feedback,setFeedback]=useState("");const [assign,setAssign]=useState<Record<string,string>>({});const mutation=useMutation({mutationFn:async({delivery,riderId}:{delivery:Row;riderId:string})=>{const t=await getToken();if(!t)throw new Error("Sign in again.");return request(`/api/admin/deliveries/${delivery.id}/assign`,t,{method:"POST",body:JSON.stringify({riderUserId:riderId,reason:"Assigned from admin dashboard"})});},onSuccess:()=>{setFeedback("Delivery assigned.");void client.invalidateQueries({queryKey:["admin"]});},onError:e=>setFeedback(e instanceof Error?e.message:"Assignment failed.")});const riderStatus=useMutation({mutationFn:async(rider:Row)=>{const t=await getToken();if(!t)throw new Error("Sign in again.");const suspended=!rider.isSuspended;const reason=suspended?window.prompt("Reason for suspending this rider")?.trim():"";if(suspended&&!reason)throw new Error("A suspension reason is required.");return request(`/api/users/admin/${rider.id}/status`,t,{method:"PATCH",body:JSON.stringify({isSuspended:suspended,reason:reason||""})});},onSuccess:()=>{setFeedback("Rider account status updated.");void riders.refetch();void client.invalidateQueries({queryKey:["admin"]});},onError:e=>setFeedback(e instanceof Error?e.message:"Rider update failed.")});const dcols=useMemo<ColumnDef<Row,any>[]>(()=>[{header:"Order",accessorKey:"parentOrderNumber"},{header:"Store",accessorKey:"storeName"},{header:"Delivery status",cell:c=><StatusBadge value={c.row.original.status}/>},{header:"Rider",accessorFn:r=>r.rider?`${r.rider.firstName} ${r.rider.lastName}`:"Unassigned"},{header:"Updated",accessorFn:r=>date(r.updatedAt)},{header:"Assign rider",cell:c=><div className="admin-assign"><select aria-label="Choose rider" value={assign[c.row.original.id]||""} onChange={e=>setAssign({...assign,[c.row.original.id]:e.target.value})}><option value="">Select online rider</option>{(riders.data?.riders||[]).filter(x=>x.isOnline&&!x.isSuspended&&!x.hasActiveDelivery&&x.approvalStatus==="approved").map(x=><option key={x.id} value={x.id}>{x.firstName} {x.lastName} · {x.vehicleType}</option>)}</select><button className="admin-link-button" disabled={!assign[c.row.original.id]||mutation.isPending} onClick={()=>mutation.mutate({delivery:c.row.original,riderId:assign[c.row.original.id]})}>Assign</button></div>}],[assign,riders.data,mutation.isPending]);const rcols=useMemo<ColumnDef<Row,any>[]>(()=>[{header:"Rider",accessorFn:r=>`${r.firstName} ${r.lastName}`.trim()},{header:"Vehicle",accessorKey:"vehicleType"},{header:"Status",cell:c=><StatusBadge value={c.row.original.isSuspended?"suspended":c.row.original.isOnline?"online":"offline"}/>},{header:"Approval",cell:c=><StatusBadge value={c.row.original.approvalStatus}/>},{header:"",cell:c=><button className="admin-link-button" disabled={riderStatus.isPending} onClick={()=>riderStatus.mutate(c.row.original)}>{c.row.original.isSuspended?"Reactivate":"Suspend"}</button>}],[riderStatus.isPending]);return <><Heading title="Delivery & riders" subtitle="Review delivery queue, assign available riders, and check rider availability."/><div className="admin-toolbar"><input className="admin-search" placeholder="Search order, store, or rider" value={qtext} onChange={e=>setQtext(e.target.value)}/><select value={status} onChange={e=>setStatus(e.target.value)}><option value="all">All deliveries</option>{["unassigned","awaiting_assignment","assigned","accepted","picked_up","in_transit","delivered","failed"].map(s=><option key={s}>{s}</option>)}</select></div>{feedback&&<div className="admin-inline-message">{feedback}</div>}<section className="admin-panel"><div className="admin-panel-heading"><div><h2>Delivery queue</h2><p>Assignment requires an online, approved rider with no active delivery.</p></div><span>{deliveries.data?.total||0} deliveries</span></div><State loading={deliveries.isLoading} error={deliveries.error} retry={()=>void deliveries.refetch()}/>{deliveries.data&&<DataTable rows={deliveries.data.deliveries||[]} columns={dcols} empty="No deliveries match this filter."/>}</section><section className="admin-panel admin-spaced"><div className="admin-panel-heading"><div><h2>Riders</h2><p>Live location is not currently available from the backend.</p></div></div><State loading={riders.isLoading} error={riders.error} retry={()=>void riders.refetch()}/>{riders.data&&<DataTable rows={riders.data.riders||[]} columns={rcols} empty="No riders found."/>}</section></>}
 

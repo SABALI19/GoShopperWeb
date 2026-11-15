@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
-function Brand() {
-  return <Link className="brand" style={{ display: "inline-flex", alignItems: "center", gap: 9 }} to="/">
-    <img width={34} height={34} src="/images/goshopper-bag.svg" alt="" />
+export function Brand({ to = "/", className = "brand" }: { to?: string; className?: string }) {
+  return <Link className={className} style={{ display: "inline-flex", alignItems: "center", gap: 9 }} to={to}>
+    <img width={34} height={34} src="/images/goshopper-bag.svg" alt="Go-Shopper" />
     <span style={{ color: "var(--white)" }}>Go<span style={{ color: "var(--orange)" }}>-</span>Shopper</span>
   </Link>;
 }
