@@ -12,6 +12,7 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
   const params = new URLSearchParams(location.search);
   const resetToken = params.get("token") || "";
   const requestedReturnTo = params.get("returnTo");
+  const signInPath = requestedReturnTo === "/admin/login" ? "/admin/login" : "/sign-in";
   const registrationContinuation = requestedReturnTo === "/welcome/customer" || requestedReturnTo === "/register/supermarket" || requestedReturnTo === "/register/rider" ? requestedReturnTo : undefined;
   const emailVerification = pathname === "/verify-email";
   const recovery = pathname === "/forgot-password";
@@ -26,6 +27,7 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [resetComplete, setResetComplete] = useState(false);
 
   useEffect(() => {
     if (!emailVerification || !resetToken) return;
@@ -48,8 +50,10 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
         await auth.forgot(email);
         setNotice("If an account exists and email delivery is available, reset instructions will arrive by email.");
       } else if (resetting) {
+        if (!resetToken) throw new Error("This reset link is missing its token. Request a new password reset link.");
         await auth.reset(resetToken, password);
         setNotice("Password updated. Sign in with the new password.");
+        setResetComplete(true);
       } else if (mode === "in") {
         const user = await auth.signIn(email, password);
         const destination = user.role === "admin" ? "/admin"
@@ -93,16 +97,18 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
     </div> : null}
     {verifying ? (mode === "up" ? <label className="auth-field">SMS verification code<input required inputMode="numeric" placeholder="Enter the code sent to your phone" value={code} onChange={(event) => setCode(event.target.value)} /></label> : <input required placeholder="SMS verification code" value={code} onChange={(event) => setCode(event.target.value)} />) : null}
     {mode === "in" && !emailVerification && !verifying ? <>
-      <input required type="text" autoCapitalize="none" placeholder="Email address or phone number" value={email} onChange={(event) => setEmail(event.target.value)} />
-      {!recovery ? <input required type="password" placeholder={resetting ? "New password" : "Password"} value={password} onChange={(event) => setPassword(event.target.value)} /> : null}
+      {!resetComplete ? <input required type={recovery ? "email" : "text"} autoCapitalize="none" autoComplete="email" placeholder={recovery ? "Email address" : "Email address or phone number"} value={email} onChange={(event) => setEmail(event.target.value)} /> : null}
+      {!recovery && !resetComplete ? <input required minLength={resetting ? 10 : undefined} type="password" autoComplete={resetting ? "new-password" : "current-password"} placeholder={resetting ? "New password (at least 10 characters)" : "Password"} value={password} onChange={(event) => setPassword(event.target.value)} /> : null}
     </> : null}
     {notice ? <p role="status">{notice}</p> : null}
     {error ? (mode === "up" ? <div className="alert" role="alert">{error}</div> : <p role="alert">{error}</p>) : null}
     {emailVerification && notice && !error ? <button type="button" className="button" onClick={() => navigate("/sign-in", registrationContinuation ? { state: { from: registrationContinuation } } : undefined)}>Continue to sign in</button> : null}
-    {!emailVerification ? <button className="button" disabled={busy}>{busy ? "Please wait..." : verifying ? "Verify phone" : recovery ? "Send reset link" : resetting ? "Reset password" : mode === "in" ? "Sign in" : "Create account"}</button> : null}
-    {mode === "in" && !recovery && !resetting ? <button type="button" onClick={() => navigate("/forgot-password")}>Forgot password?</button> : null}
+    {!emailVerification && !resetComplete ? <button className="button" disabled={busy || (resetting && !resetToken)}>{busy ? "Please wait..." : verifying ? "Verify phone" : recovery ? "Send reset link" : resetting ? "Reset password" : mode === "in" ? "Sign in" : "Create account"}</button> : null}
+    {resetComplete ? <button type="button" className="button" onClick={() => navigate(signInPath, { replace: true })}>Continue to sign in</button> : null}
+    {mode === "in" && !recovery && !resetting ? <button type="button" onClick={() => navigate(`/forgot-password?returnTo=${encodeURIComponent(pathname === "/admin/login" ? "/admin/login" : "/sign-in")}`)}>Forgot password?</button> : null}
     {verifying ? <button type="button" onClick={() => void auth.resend(email)}>Resend verification</button> : null}
-    <p>{mode === "in" ? <>Need an account? <Link to="/sign-up">Register</Link></> : <>Already registered? <Link to="/sign-in">Sign in</Link></>}</p>
+    {mode === "in" && pathname === "/admin/login" ? null : <p>{mode === "in" ? <>Need an account? <Link to="/sign-up">Register</Link></> : <>Already registered? <Link to="/sign-in">Sign in</Link></>}</p>}
+    {mode === "in" && (recovery || resetting) && !resetComplete ? <p><Link to={signInPath}>Back to sign in</Link></p> : null}
   </form>;
 
   if (mode === "up") {
