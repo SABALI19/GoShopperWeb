@@ -22,6 +22,7 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [code, setCode] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -98,7 +99,7 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
     {verifying ? (mode === "up" ? <label className="auth-field">SMS verification code<input required inputMode="numeric" placeholder="Enter the code sent to your phone" value={code} onChange={(event) => setCode(event.target.value)} /></label> : <input required placeholder="SMS verification code" value={code} onChange={(event) => setCode(event.target.value)} />) : null}
     {mode === "in" && !emailVerification && !verifying ? <>
       {!resetComplete ? <input required type={recovery ? "email" : "text"} autoCapitalize="none" autoComplete="email" placeholder={recovery ? "Email address" : "Email address or phone number"} value={email} onChange={(event) => setEmail(event.target.value)} /> : null}
-      {!recovery && !resetComplete ? <input required minLength={resetting ? 10 : undefined} type="password" autoComplete={resetting ? "new-password" : "current-password"} placeholder={resetting ? "New password (at least 10 characters)" : "Password"} value={password} onChange={(event) => setPassword(event.target.value)} /> : null}
+      {!recovery && !resetComplete ? resetting ? <input required minLength={10} type="password" autoComplete="new-password" placeholder="New password (at least 10 characters)" value={password} onChange={(event) => setPassword(event.target.value)} /> : <span className="auth-password-field"><input required type={passwordVisible ? "text" : "password"} autoComplete="current-password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} /><button type="button" className="auth-password-toggle" aria-label={passwordVisible ? "Hide password" : "Show password"} aria-pressed={passwordVisible} onClick={() => setPasswordVisible((visible) => !visible)}><svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/>{passwordVisible ? <path strokeLinecap="round" d="m4 4 16 16"/> : null}</svg></button></span> : null}
     </> : null}
     {notice ? <p role="status">{notice}</p> : null}
     {error ? (mode === "up" ? <div className="alert" role="alert">{error}</div> : <p role="alert">{error}</p>) : null}
