@@ -23,8 +23,7 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [code, setCode] = useState("");
-  const [verifying, setVerifying] = useState(false);
+  const [verificationPending, setVerificationPending] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -63,8 +62,10 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
         navigate(typeof location.state?.from === "string" ? location.state.from : destination);
       } else {
         const result = await auth.register(role, { firstName, lastName, email, phone, password });
-        setVerifying(true);
-        setNotice(`${result.verification.emailSent ? "Verification email accepted for delivery." : "Email delivery is not configured or is unavailable; request a resend when the service is ready."} ${result.verification.phoneCodeSent ? "SMS code accepted for delivery." : "SMS delivery is not configured or is unavailable; request a resend when the service is ready."}`);
+        setVerificationPending(true);
+        setNotice(result.verification.emailSent
+          ? `A verification link was sent to ${email}. Open it to verify your account, then sign in.`
+          : "Your account was created, but the verification email could not be sent. Configure Brevo SMTP, then request another email below.");
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not complete request.");
@@ -73,22 +74,21 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
     }
   };
 
-  const verify = async () => {
+  const resendVerification = async () => {
     setBusy(true);
     setError("");
-    setNotice("");
     try {
-      await auth.verifyPhone(email, code);
-      setNotice("Phone verified. Check your email and open the verification link before signing in.");
+      await auth.resend(email);
+      setNotice("If the account exists and still needs email verification, a fresh link will be sent. Check your inbox and spam folder.");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Verification failed.");
+      setError(e instanceof Error ? e.message : "Could not resend the verification email.");
     } finally {
       setBusy(false);
     }
   };
 
-  const signupFields = mode === "up" && !verifying && !emailVerification && !recovery && !resetting;
-  const form = <form className={mode === "up" ? "auth-form" : "grid gap-4"} onSubmit={(event) => { event.preventDefault(); void (verifying ? verify() : submit()); }}>
+  const signupFields = mode === "up" && !verificationPending && !emailVerification && !recovery && !resetting;
+  const form = <form className={mode === "up" ? "auth-form" : "grid gap-4"} onSubmit={(event) => { event.preventDefault(); void submit(); }}>
     {signupFields ? <div className="form-grid auth-signup-fields">
       <label>First name<input required autoComplete="given-name" placeholder="Enter your first name" value={firstName} onChange={(event) => setFirstName(event.target.value)} /></label>
       <label>Last name<input autoComplete="family-name" placeholder="Enter your last name" value={lastName} onChange={(event) => setLastName(event.target.value)} /></label>
@@ -96,18 +96,17 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
       <label>Email address<input required type="email" autoCapitalize="none" autoComplete="email" placeholder="Enter your email address" value={email} onChange={(event) => setEmail(event.target.value)} /></label>
       <label className="wide">Password<input required type="password" autoComplete="new-password" placeholder="Create a password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>
     </div> : null}
-    {verifying ? (mode === "up" ? <label className="auth-field">SMS verification code<input required inputMode="numeric" placeholder="Enter the code sent to your phone" value={code} onChange={(event) => setCode(event.target.value)} /></label> : <input required placeholder="SMS verification code" value={code} onChange={(event) => setCode(event.target.value)} />) : null}
-    {mode === "in" && !emailVerification && !verifying ? <>
+    {mode === "in" && !emailVerification ? <>
       {!resetComplete ? <input required type={recovery ? "email" : "text"} autoCapitalize="none" autoComplete="email" placeholder={recovery ? "Email address" : "Email address or phone number"} value={email} onChange={(event) => setEmail(event.target.value)} /> : null}
       {!recovery && !resetComplete ? resetting ? <input required minLength={10} type="password" autoComplete="new-password" placeholder="New password (at least 10 characters)" value={password} onChange={(event) => setPassword(event.target.value)} /> : <span className="auth-password-field"><input required type={passwordVisible ? "text" : "password"} autoComplete="current-password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} /><button type="button" className="auth-password-toggle" aria-label={passwordVisible ? "Hide password" : "Show password"} aria-pressed={passwordVisible} onClick={() => setPasswordVisible((visible) => !visible)}><svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/>{passwordVisible ? <path strokeLinecap="round" d="m4 4 16 16"/> : null}</svg></button></span> : null}
     </> : null}
     {notice ? <p role="status">{notice}</p> : null}
     {error ? (mode === "up" ? <div className="alert" role="alert">{error}</div> : <p role="alert">{error}</p>) : null}
     {emailVerification && notice && !error ? <button type="button" className="button" onClick={() => navigate("/sign-in", registrationContinuation ? { state: { from: registrationContinuation } } : undefined)}>Continue to sign in</button> : null}
-    {!emailVerification && !resetComplete ? <button className="button" disabled={busy || (resetting && !resetToken)}>{busy ? "Please wait..." : verifying ? "Verify phone" : recovery ? "Send reset link" : resetting ? "Reset password" : mode === "in" ? "Sign in" : "Create account"}</button> : null}
+    {!emailVerification && !resetComplete && !verificationPending ? <button className="button" disabled={busy || (resetting && !resetToken)}>{busy ? "Please wait..." : recovery ? "Send reset link" : resetting ? "Reset password" : mode === "in" ? "Sign in" : "Create account"}</button> : null}
     {resetComplete ? <button type="button" className="button" onClick={() => navigate(signInPath, { replace: true })}>Continue to sign in</button> : null}
     {mode === "in" && !recovery && !resetting ? <button type="button" onClick={() => navigate(`/forgot-password?returnTo=${encodeURIComponent(pathname === "/admin/login" ? "/admin/login" : "/sign-in")}`)}>Forgot password?</button> : null}
-    {verifying ? <button type="button" onClick={() => void auth.resend(email)}>Resend verification</button> : null}
+    {verificationPending || (mode === "in" && !recovery && !resetting && !emailVerification) ? <button type="button" className={verificationPending ? "button" : "text-link"} disabled={busy || !/^\S+@\S+\.\S+$/.test(email.trim())} onClick={() => void resendVerification()}>{busy ? "Please wait..." : "Resend verification email"}</button> : null}
     {mode === "in" && pathname === "/admin/login" ? null : <p>{mode === "in" ? <>Need an account? <Link to="/sign-up">Register</Link></> : <>Already registered? <Link to="/sign-in">Sign in</Link></>}</p>}
     {mode === "in" && (recovery || resetting) && !resetComplete ? <p><Link to={signInPath}>Back to sign in</Link></p> : null}
   </form>;
@@ -119,7 +118,7 @@ export function AuthPage({ mode, role = "supermarket" }: { mode: "in" | "up"; ro
       </Link>
       <div className="form-intro">
         <span className="eyebrow">{role === "customer" ? "Customer registration" : role === "rider" ? "Delivery rider application" : "Supermarket partner application"}</span>
-        <h1>{verifying ? "Verify your details" : emailVerification ? "Verify your email" : `Start your ${role} journey.`}</h1>
+        <h1>{verificationPending || emailVerification ? "Verify your email" : `Start your ${role} journey.`}</h1>
         <p>{role === "customer" ? "Create your Go-Shopper account to get started." : "Create your account first. After verification, you can complete your application for review."}</p>
       </div>
       <section className="application-form auth-signup-card">{form}</section>

@@ -4,7 +4,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import { AuthPage } from "./AuthPage";
 
 const { forgot, reset } = vi.hoisted(() => ({ forgot: vi.fn(), reset: vi.fn() }));
-vi.mock("./auth/AuthProvider", () => ({ useAuth: () => ({ forgot, reset, verifyEmail: vi.fn(), signIn: vi.fn(), register: vi.fn(), verifyPhone: vi.fn(), resend: vi.fn() }) }));
+vi.mock("./auth/AuthProvider", () => ({ useAuth: () => ({ forgot, reset, verifyEmail: vi.fn(), signIn: vi.fn(), register: vi.fn(), resend: vi.fn() }) }));
 
 function CurrentPath() { return <output>{useLocation().pathname}</output>; }
 

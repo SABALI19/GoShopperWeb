@@ -33,7 +33,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   auth.ready = true;
   auth.user = null;
-  auth.register.mockResolvedValue({ verification: { emailSent: true, phoneCodeSent: true } });
+  auth.register.mockResolvedValue({ verification: { emailSent: true, emailVerificationRequired: true, phoneVerificationRequired: false } });
   auth.verifyEmail.mockResolvedValue(undefined);
   auth.signIn.mockResolvedValue(customer);
 });
