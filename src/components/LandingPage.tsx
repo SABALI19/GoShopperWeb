@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { getAppDownloadUrl } from "../utils/appDownloadUrl";
 
 const steps = [
   { number: "01", title: "Find nearby stores", copy: "Discover supermarkets and everyday essentials from stores serving your area." },
@@ -7,7 +8,10 @@ const steps = [
 ];
 
 export default function LandingPage() {
+  const appDownloadUrl = getAppDownloadUrl(import.meta.env.VITE_APP_DOWNLOAD_URL as string | undefined);
+
   return (
+    <>
     <main className="overflow-hidden bg-brand-ink text-white">
       <section
         className="relative min-h-screen min-h-[100svh] overflow-hidden bg-brand-ink bg-cover bg-center text-center"
@@ -16,7 +20,7 @@ export default function LandingPage() {
       >
         <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(24,20,17,.16)_0%,rgba(24,20,17,.12)_42%,rgba(24,20,17,.64)_100%)]" />
 
-        <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-7xl flex-col items-center justify-center gap-5 px-4 pb-8 pt-28 sm:gap-8 sm:px-10 sm:pb-12 sm:pt-36">
+        <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-7xl flex-col items-center justify-center gap-5 px-4 pb-8 pt-40 sm:gap-8 sm:px-10 sm:pb-12 sm:pt-36">
           <h1 className="w-full max-w-5xl text-[clamp(2rem,8.5vw,5rem)] font-bold uppercase leading-[1.08] tracking-[-.045em] text-white drop-shadow-lg">
             Shop local, get your<br className="sm:hidden" /> <span className="text-brand-orange">everyday essentials</span>
           </h1>
@@ -83,5 +87,26 @@ export default function LandingPage() {
         </div>
       </section>
     </main>
+      <div className="fixed inset-x-0 bottom-0 z-40 px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] sm:bottom-4 sm:px-6 sm:pb-0">
+        {appDownloadUrl ? <a href={appDownloadUrl} target="_blank" rel="noreferrer" aria-label="Open Go-Shopper app download" className="mx-auto flex w-full max-w-xl items-center gap-3 rounded-2xl border border-white/10 bg-brand-orange p-3 text-white shadow-2xl transition hover:bg-orange-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:p-4">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white">
+            <img src="/images/goshopper-bag.svg" alt="" className="h-9 w-9 object-contain" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-bold sm:text-base">Get the Go-Shopper app</span>
+            <span className="block text-xs text-white/85 sm:text-sm">Tap to download and start shopping</span>
+          </span>
+          <span aria-hidden="true" className="pr-1 text-2xl leading-none">›</span>
+        </a> : <div role="status" className="mx-auto flex w-full max-w-xl items-center gap-3 rounded-2xl border border-white/10 bg-brand-ink p-3 text-white shadow-2xl sm:p-4">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white">
+            <img src="/images/goshopper-bag.svg" alt="" className="h-9 w-9 object-contain" />
+          </span>
+          <span>
+            <span className="block text-sm font-bold sm:text-base">Get the Go-Shopper app</span>
+            <span className="block text-xs text-white/70 sm:text-sm">App download link coming soon</span>
+          </span>
+        </div>}
+      </div>
+    </>
   );
 }
